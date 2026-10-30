@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Word Character Shuffler - An interactive tool to scramble letters within words, featuring Typoglycemia mode, live preview, and instant copy.">
+  <title>Word Scrambler • Word Character Shuffler</title>
+  
+  <!-- Modern Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Ambient background glow elements -->
+  <div class="ambient-glow glow-1" aria-hidden="true"></div>
+  <div class="ambient-glow glow-2" aria-hidden="true"></div>
+  <div class="ambient-glow glow-3" aria-hidden="true"></div>
+
+  <!-- Toast notification container -->
+  <div id="toast" class="toast" role="status" aria-live="polite">
+    <svg class="toast-icon" viewBox="0 0 20 20" fill="currentColor">
+      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+    </svg>
+    <span id="toast-message">Copied to clipboard!</span>
+  </div>
+
+  <div class="app-wrapper">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="badge-pill">
+        <span class="pulse-dot"></span>
+        <span>Interactive Text Laboratory</span>
+      </div>
+      <h1 class="main-title">
+        Word Character <span class="gradient-text">Shuffler</span>
+      </h1>
+      <p class="subtitle">
+        Scramble characters within every word in real-time. Test cognitive reading perception with the famous <em>Typoglycemia</em> effect or go full chaotic entropy.
+      </p>
+
+      <!-- Quick sample loader buttons -->
+      <div class="sample-bar">
+        <span class="sample-label">Try a sample:</span>
+        <button type="button" class="chip-btn" id="sample-cambridge">
+          🧠 Cambridge Study
+        </button>
+        <button type="button" class="chip-btn" id="sample-quote">
+          🚀 Einstein Quote
+        </button>
+        <button type="button" class="chip-btn" id="sample-pangram">
+          🦊 Quick Brown Fox
+        </button>
+      </div>
+    </header>
+
+    <!-- Controls Toolbar -->
+    <section class="controls-card" aria-label="Shuffling Settings">
+      <div class="controls-grid">
+        <!-- Shuffle Mode -->
+        <div class="control-group">
+          <label class="control-label" for="shuffle-mode">
+            <svg class="ctrl-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+            </svg>
+            Shuffle Algorithm
+          </label>
+          <div class="select-wrapper">
+            <select id="shuffle-mode">
+              <option value="all">Full Anarchy (Shuffle All Characters)</option>
+              <option value="typoglycemia" selected>Typoglycemia (Keep First & Last Letter)</option>
+              <option value="reverse">Reverse Characters (Mirror Word)</option>
+              <option value="inner-reverse">Reverse Middle Only (Keep First & Last)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Punctuation Handling -->
+        <div class="control-group">
+          <label class="control-label">
+            <svg class="ctrl-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+            Text Integrity
+          </label>
+          <div class="checkbox-group">
+            <label class="toggle-control" title="Keeps punctuation marks like commas, periods, quotes attached correctly">
+              <input type="checkbox" id="preserve-punct" checked>
+              <span class="toggle-switch"></span>
+              <span class="toggle-text">Protect Punctuation</span>
+            </label>
+            <label class="toggle-control" title="Preserves capital letter positions">
+              <input type="checkbox" id="preserve-case" checked>
+              <span class="toggle-switch"></span>
+              <span class="toggle-text">Match Original Casing</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Extra features (Sound & Live Mode) -->
+        <div class="control-group">
+          <label class="control-label">
+            <svg class="ctrl-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+            </svg>
+            Preferences
+          </label>
+          <div class="checkbox-group">
+            <label class="toggle-control" title="Immediately re-scrambles as you type">
+              <input type="checkbox" id="live-mode" checked>
+              <span class="toggle-switch"></span>
+              <span class="toggle-text">Live Shuffling</span>
+            </label>
+            <label class="toggle-control" title="Synthesizer UI sounds">
+              <input type="checkbox" id="sound-toggle" checked>
+              <span class="toggle-switch"></span>
+              <span class="toggle-text">Audio Effects</span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Workspace (Split Grid: Input / Output) -->
+    <main class="editor-grid">
+      <!-- Input Panel -->
+      <section class="panel-card" aria-label="Input Text Area">
+        <div class="panel-header">
+          <div class="panel-title-wrap">
+            <span class="panel-indicator input-dot"></span>
+            <h2 class="panel-title">Original Text</h2>
+          </div>
+          <div class="panel-actions">
+            <button type="button" class="action-btn" id="clear-btn" title="Clear text input" aria-label="Clear input text">
+              <svg viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+              </svg>
+              Clear
+            </button>
+            <button type="button" class="action-btn" id="paste-btn" title="Paste from clipboard" aria-label="Paste from clipboard">
+              <svg viewBox="0 0 20 20" fill="currentColor">
+                <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
+                <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
+              </svg>
+              Paste
+            </button>
+          </div>
+        </div>
+
+        <div class="textarea-container">
+          <textarea 
+            id="text-input" 
+            placeholder="Type or paste any paragraph here... Watch each word scramble dynamically!"
+            spellcheck="false"
+            aria-label="Input text to scramble"
+          ></textarea>
+        </div>
+
+        <div class="panel-footer">
+          <div class="stats-group">
+            <span class="stat-pill"><strong id="input-word-count">0</strong> words</span>
+            <span class="stat-pill"><strong id="input-char-count">0</strong> characters</span>
+          </div>
+          <span class="help-hint">Tip: Supports multiple paragraphs and emojis</span>
+        </div>
+      </section>
+
+      <!-- Output Panel -->
+      <section class="panel-card output-panel" aria-label="Scrambled Result Area">
+        <div class="panel-header">
+          <div class="panel-title-wrap">
+            <span class="panel-indicator output-dot"></span>
+            <h2 class="panel-title">Shuffled Result</h2>
+            <span class="tag-badge" id="current-mode-tag">Typoglycemia</span>
+          </div>
+          <div class="panel-actions">
+            <button type="button" class="action-btn primary-glow-btn" id="reshuffle-btn" title="Shuffle characters again" aria-label="Shuffle characters again">
+              <svg class="shuffle-spin-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              Reshuffle
+            </button>
+            <button type="button" class="action-btn success-btn" id="copy-btn" title="Copy scrambled output" aria-label="Copy scrambled output to clipboard">
+              <svg viewBox="0 0 20 20" fill="currentColor">
+                <path d="M7 9a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2H9a2 2 0 01-2-2V9z" />
+                <path d="M5 3a2 2 0 00-2 2v6a2 2 0 002 2V5h8a2 2 0 00-2-2H5z" />
+              </svg>
+              Copy
+            </button>
+          </div>
+        </div>
+
+        <div class="textarea-container">
+          <!-- Real readonly textarea for effortless selection & accessibility -->
+          <textarea 
+            id="text-output" 
+            readonly 
+            placeholder="Shuffled words will magically appear here..."
+            aria-label="Scrambled text output"
+          ></textarea>
+        </div>
+
+        <div class="panel-footer">
+          <div class="stats-group">
+            <span class="stat-pill"><strong id="output-word-count">0</strong> words</span>
+            <span class="stat-pill"><strong id="scrambled-words-count">0</strong> modified</span>
+          </div>
+          <div class="footer-actions">
+            <button type="button" class="link-btn" id="toggle-inspector-btn" aria-expanded="false" aria-controls="interactive-inspector">
+              <svg viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
+              </svg>
+              <span>Interactive Word Inspector</span>
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Interactive Word Comparison / Inspector Card -->
+    <section id="interactive-inspector" class="inspector-card hidden" aria-label="Word by word comparison">
+      <div class="inspector-header">
+        <div>
+          <h3 class="inspector-title">Interactive Word Matrix</h3>
+          <p class="inspector-subtitle">Hover or tap on any scrambled word below to reveal its original anatomy and how letters were reordered.</p>
+        </div>
+        <button type="button" class="close-icon-btn" id="close-inspector-btn" aria-label="Close Inspector">
+          ✕
+        </button>
+      </div>
+      <div id="word-chips-container" class="word-chips-container">
+        <!-- Injected via JavaScript -->
+        <span class="empty-chips-msg">Type some words in the input to explore the word matrix.</span>
+      </div>
+    </section>
+
+    <!-- Educational / Infobox Feature -->
+    <footer class="info-section">
+      <div class="info-card">
+        <div class="info-icon">💡</div>
+        <div class="info-text">
+          <h4>Did you know?</h4>
+          <p>
+            The <strong>Typoglycemia effect</strong> demonstrates that as long as the first and last letters of words remain unchanged, the human brain can read the jumbled text with surprising fluency because we perceive whole words rather than individual letters!
+          </p>
+        </div>
+      </div>
+      <div class="credit-bar">
+        <span>Crafted with pure HTML5, CSS3, & Modern Vanilla JavaScript</span>
+      </div>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
